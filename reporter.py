@@ -1,8 +1,9 @@
+import sys
 import time
 from typing import Optional
+
 import requests
 from bs4 import BeautifulSoup
-import sys
 
 person_list = [
     {
@@ -22,9 +23,10 @@ default_info = {
     'now_city': '340100',  # 合肥
     'gps_city': '',
     'now_detail': '',
-    'body_condition': '1',
+    'is_inschool': '6',  # 西区
+    'body_condition': '1',  # 正常
     'body_condition_detail': '',
-    'now_status': '2',
+    'now_status': '1',  # 正常在校园内
     'now_status_detail': '',
     'has_fever': '0',
     'last_touch_sars': '0',
