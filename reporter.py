@@ -16,20 +16,20 @@ person_list = [
 ]
 
 default_info = {
-    'now_address': '1',
+    'now_address': '1',  # 当前所在地 1:内地 2:香港 3:国外 4:澳门 5:台湾
     'gps_now_address': '',
-    'now_province': '340000',  # 安徽
+    'now_province': '340000',  # 当前省份代码，默认安徽
     'gps_province': '',
-    'now_city': '340100',  # 合肥
+    'now_city': '340100',  # 当前城市代码，默认合肥
     'gps_city': '',
-    'now_detail': '',
-    'is_inschool': '6',  # 西区
-    'body_condition': '1',  # 正常
-    'body_condition_detail': '',
-    'now_status': '1',  # 正常在校园内
-    'now_status_detail': '',
-    'has_fever': '0',
-    'last_touch_sars': '0',
+    'now_detail': '',  # 具体位置，当前所在地为“国外”时填写
+    'is_inschool': '6',  # 是否在校 0:校外 2:东区 3:南区 4:中区 5:北区 6:西区
+    'body_condition': '1',  # 当前身体状况 1:正常 2:疑似 3:确诊 4:其他
+    'body_condition_detail': '',  # 具体情况，当前身体状况为“其他”时填写
+    'now_status': '1',  # 当前状态 1:正常在校园内 2:正常在家 3:居家留观 4:集中留观 5:住院治疗 6:其他
+    'now_status_detail': '',  # 具体情况，当前状态选择“其他”时填写
+    'has_fever': '0',  # 目前有无发热症状 0:无 1: 有
+    'last_touch_sars': '0',  # 是否接触过疑似患者  0:无 1:有
     'last_touch_sars_date': '',
     'last_touch_sars_detail': '',
     'last_touch_hubei': '0',
@@ -66,10 +66,10 @@ headers = {
 
 def get_full_data(person: dict) -> dict:
     info = default_info.copy()
-    if 'now_province' in person:
-        info['now_province'] = person['now_province']
-    if 'now_city' in person:
-        info['now_city'] = person['now_city']
+    p = person.copy()
+    p.pop('id')
+    p.pop('password')
+    info.update(p)
     return info
 
 
@@ -107,11 +107,11 @@ def check_report(sess: requests.Session) -> bool:
     return False
 
 
-def report(person: dict) -> bool:
+def report(person: dict, check_first: bool = True) -> bool:
     sess = login(person['id'], person['password'])
     if sess is None:
         return False
-    if check_report(sess):
+    if check_first and check_report(sess):
         return True
     r = sess.get('https://weixine.ustc.edu.cn/2020/home')
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -135,7 +135,7 @@ def report(person: dict) -> bool:
 if __name__ == '__main__':
     for person in person_list:
         try:
-            success = report(person)
+            success = report(person, check_first=False)
             if success:
                 print(f"{person['id']} report successfully")
             else:
