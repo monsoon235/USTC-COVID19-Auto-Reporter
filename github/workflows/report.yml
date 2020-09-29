@@ -13,5 +13,6 @@ jobs:
 
       - name: report
         run: |
+          pip3 install --user setuptools
           pip3 install --user -r requirements.txt
           python3 reporter.py
