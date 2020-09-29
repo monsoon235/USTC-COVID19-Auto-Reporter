@@ -1,7 +1,8 @@
+import datetime
 import sys
-import time
 from typing import List, Optional
 
+import pytz
 import requests
 import yaml
 from bs4 import BeautifulSoup
@@ -86,7 +87,9 @@ def check_report(sess: requests.Session) -> bool:
         return False
     start = info.find('：') + 1
     date_str = info[start:start + len('0000-00-00')]
-    if time.strftime("%Y-%m-%d", time.localtime()) == date_str:
+    date_remote = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+    date_local = datetime.datetime.now(tz=pytz.timezone('Asia/Shanghai')).date()
+    if date_remote == date_local:
         return True
     return False
 
