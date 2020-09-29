@@ -29,3 +29,52 @@
 - id: PByyyyyyyy
   password: yyyyyyyy
 ```
+
+## 部署 & 运行
+
+安装依赖：
+
+```shell script
+pip3 install -r requirements.txt
+```
+
+### 手动运行
+
+```shell script
+python3 reporter.py
+```
+
+### crontab 计划任务
+
+```shell script
+crontab -e
+```
+
+添加一行
+
+```text
+# 每小时运行一次
+0 * * * * cd <reporter.py 所在的路径> && python3 reporter.py
+```
+
+### 利用 Github CI/CD 计划执行
+
+**首先确保不要在 public repo 中存储你的密码，应当在 private repo 中部署。**
+
+**但即使是 private repo 也不推荐存储敏感信息，这种部署方式仅当无 VPS 可用时推荐使用。**
+
+**USTC 学生可以在 [https://vlab.ustc.edu.cn/](https://vlab.ustc.edu.cn/) 中建立一个免费的虚拟主机。**
+
+新建一个私有仓库
+
+```shell script
+git clone <私有仓库地址>
+cd <私有仓库名称>
+git remote add upstream https://github.com/yjh1021317464/USTC-COVID19-Auto-Reporter.git
+git pull upstream master
+# ... 编辑 info.yaml
+mv github .github # 启用 github CI/CD
+git add .
+git commit -m 'set private info'
+git push
+```

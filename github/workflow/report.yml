@@ -1,0 +1,17 @@
+name: report
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: report
+        run: |
+          pip3 install --user -r requirements.txt
+          python3 reporter.py
