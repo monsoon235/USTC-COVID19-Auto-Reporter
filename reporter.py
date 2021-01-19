@@ -114,7 +114,7 @@ def report(info: dict, check_first: bool = True) -> bool:
         f"PHPSESSID={sess.cookies.get('PHPSESSID')};" + \
         f"XSRF-TOKEN={sess.cookies.get('XSRF-TOKEN')};" + \
         f"laravel_session={sess.cookies.get('laravel_session')}"
-    r = sess.post(url, data=data, headers=headers)
+    r = sess.post(url, data=data)  # , headers=headers)
     if r.ok and check_report(sess):
         return True
     else:
