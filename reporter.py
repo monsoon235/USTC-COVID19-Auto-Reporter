@@ -63,8 +63,11 @@ def login(id: str, password: str) -> Optional[requests.Session]:
     data = {
         'model': 'uplogin.jsp',
         'service': 'https://weixine.ustc.edu.cn/2020/caslogin',
+        'warn': '',
+        'showCode': '',
         'username': id,
-        'password': password
+        'password': password,
+        'button': ''
     }
     sess = requests.Session()
     r = sess.post(url, data=data)
