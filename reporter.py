@@ -1,29 +1,35 @@
 import datetime
+import os
 import sys
+import re
 from typing import List, Optional
 
 import pytz
 import requests
 import yaml
+import pytesseract
 from bs4 import BeautifulSoup
 
 default_info = {
-    'now_address': '1',  # 当前所在地 1:内地 2:香港 3:国外 4:澳门 5:台湾
+    'now_address': 1,  # 当前所在地 1:内地 2:香港 3:国外 4:澳门 5:台湾
     'gps_now_address': '',
-    'now_province': '340000',  # 当前省份代码，默认安徽
+    'now_province': 340000,  # 当前省份代码，默认安徽
     'gps_province': '',
-    'now_city': '340100',  # 当前城市代码，默认合肥
+    'now_city': 340100,  # 当前城市代码，默认合肥
     'gps_city': '',
+    'now_country': 340104,  # 当前地区码，默认安徽合肥蜀山区
+    'gps_country': '',
     'now_detail': '',  # 具体位置，当前所在地为“国外”时填写
-    'is_inschool': '6',  # 是否在校 0:校外 2:东区 3:南区 4:中区 5:北区 6:西区
-    'body_condition': '1',  # 当前身体状况 1:正常 2:疑似 3:确诊 4:其他
+    'body_condition': 1,  # 当前身体状况 1:正常 2:疑似 3:确诊 4:其他
     'body_condition_detail': '',  # 具体情况，当前身体状况为“其他”时填写
     'now_status': '1',  # 当前状态 1:正常在校园内 2:正常在家 3:居家留观 4:集中留观 5:住院治疗 6:其他
     'now_status_detail': '',  # 具体情况，当前状态选择“其他”时填写
-    'has_fever': '0',  # 目前有无发热症状 0:无 1: 有
-    'last_touch_sars': '0',  # 是否接触过疑似患者  0:无 1:有
+    'has_fever': 0,  # 目前有无发热症状 0:无 1: 有
+    'last_touch_sars': 0,  # 是否接触过疑似患者 0:无 1:有
     'last_touch_sars_date': '',  # 最近一次接触日期，当是否接触过疑似患者为“有”时填写
     'last_touch_sars_detail': '',  # 具体情况，当是否接触过疑似患者为“有”时填写
+    'is_danger': 0,  # 当前居住地是否为疫情中高风险地区 0:无 1:有
+    'is_goto_danger': 0,  # 14天内是否有疫情中高风险地区旅居史 0:无 1:有
     'other_detail': ''  # 其他情况说明
 }
 
@@ -39,12 +45,14 @@ headers = {
     'content-type': 'application/x-www-form-urlencoded',
     'origin': 'https://weixine.ustc.edu.cn',
     'referer': 'https://weixine.ustc.edu.cn/2020/home',
+    'sec-ch-ua': '"Chromium";v="92", " Not A;Brand";v="99", "Google Chrome";v="92"',
+    'sec-ch-ua-mobile': '?0',
     'sec-fetch-dest': 'document',
     'sec-fetch-mode': 'navigate',
     'sec-fetch-site': 'same-origin',
     'sec-fetch-user': '?1',
     'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
 }
 
 
@@ -59,17 +67,29 @@ def read_info() -> List[dict]:
 
 
 def login(id: str, password: str) -> Optional[requests.Session]:
+    sess = requests.Session()
     url = 'https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fweixine.ustc.edu.cn%2F2020%2Fcaslogin'
+    r = sess.get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    validate_img_url = 'https://passport.ustc.edu.cn/validatecode.jsp?type=login'
+    validate_img = sess.get(validate_img_url).content
+    validate_img_file = '/tmp/test.jpg'
+    with open(validate_img_file, 'wb') as f:
+        f.write(validate_img)
+    validate_code: str = pytesseract.image_to_string(validate_img_file)
+    os.remove(validate_img_file)
+    validate_code = re.findall(r'[0-9]{4}', validate_code)[0]
     data = {
-        'model': 'uplogin.jsp',
-        'service': 'https://weixine.ustc.edu.cn/2020/caslogin',
-        'warn': '',
-        'showCode': '',
+        'model': soup.find('input', {'name': 'model'}).get('value'),
+        'service': soup.find('input', {'name': 'service'}).get('value'),
+        'warn': soup.find('input', {'name': 'warn'}).get('value'),
+        'showCode': soup.find('input', {'name': 'showCode'}).get('value'),
+        'CAS_LT': soup.find('input', {'name': 'CAS_LT'}).get('value'),
+        'LT': validate_code,
         'username': id,
         'password': password,
-        'button': ''
+        'button': '',
     }
-    sess = requests.Session()
     r = sess.post(url, data=data)
     if r.url == 'https://weixine.ustc.edu.cn/2020/home':
         print(f'{id} login successfully')
