@@ -13,7 +13,7 @@ jobs:
 
       - name: report
         run: |
-          apt install -y tesseract-ocr
+          apt install -y tesseract-ocr tesseract-ocr-eng
           pip3 install --user setuptools
           pip3 install --user -r requirements.txt
           python3 reporter.py
