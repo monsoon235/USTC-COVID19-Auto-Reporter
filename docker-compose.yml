@@ -1,0 +1,8 @@
+services:
+  covid19_reporter:
+    image: python:slim
+    restart: always
+    working_dir: /root
+    command: sh run.sh
+    volumes:
+      - .:/root:ro
