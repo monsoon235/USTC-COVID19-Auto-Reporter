@@ -5,7 +5,7 @@ sed -i 's/# zh_CN.UTF-8 UTF-8/zh_CN.UTF-8 UTF-8/g' /etc/locale.gen
 locale-gen
 export LANG=zh_CN.UTF-8
 
-pip install -r requirements.txt
+pip install -i https://mirrors.ustc.edu.cn/pypi/web/simple -r requirements.txt
 
 while true; do
   date
