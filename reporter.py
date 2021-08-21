@@ -71,25 +71,28 @@ def login(id: str, password: str) -> Optional[requests.Session]:
     url = 'https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fweixine.ustc.edu.cn%2F2020%2Fcaslogin'
     r = sess.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
-    validate_img_url = 'https://passport.ustc.edu.cn/validatecode.jsp?type=login'
-    validate_img = sess.get(validate_img_url).content
-    validate_img_file = '/tmp/test.jpg'
-    with open(validate_img_file, 'wb') as f:
-        f.write(validate_img)
-    validate_code: str = pytesseract.image_to_string(validate_img_file)
-    os.remove(validate_img_file)
-    validate_code = re.findall(r'[0-9]{4}', validate_code)[0]
     data = {
         'model': soup.find('input', {'name': 'model'}).get('value'),
         'service': soup.find('input', {'name': 'service'}).get('value'),
         'warn': soup.find('input', {'name': 'warn'}).get('value'),
         'showCode': soup.find('input', {'name': 'showCode'}).get('value'),
-        'CAS_LT': soup.find('input', {'name': 'CAS_LT'}).get('value'),
-        'LT': validate_code,
         'username': id,
         'password': password,
         'button': '',
     }
+    if data['showCode']:
+        validate_img_url = 'https://passport.ustc.edu.cn/validatecode.jsp?type=login'
+        validate_img = sess.get(validate_img_url).content
+        validate_img_file = '/tmp/code.jpg'
+        with open(validate_img_file, 'wb') as f:
+            f.write(validate_img)
+        validate_code: str = pytesseract.image_to_string(validate_img_file)
+        validate_code = re.findall(r'[0-9]{4}', validate_code)[0]
+        data.update({
+            'CAS_LT': soup.find('input', {'name': 'CAS_LT'}).get('value'),
+            'LT': validate_code,
+        })
+    print(data)
     r = sess.post(url, data=data)
     if r.url == 'https://weixine.ustc.edu.cn/2020/home':
         print(f'{id} login successfully')
