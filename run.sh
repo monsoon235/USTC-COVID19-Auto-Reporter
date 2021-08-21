@@ -4,6 +4,7 @@ apt install -y tesseract-ocr tesseract-ocr-eng
 pip install -r requirements.txt
 
 while true; do
-    python3 reporter.py
-    sleep 3600
+  date
+  python3 reporter.py
+  sleep 3600
 done
