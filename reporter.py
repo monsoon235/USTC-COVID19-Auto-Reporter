@@ -11,16 +11,7 @@ import pytesseract
 from bs4 import BeautifulSoup
 
 default_info = {
-    'now_address': 1,  # 当前所在地 1:内地 2:香港 3:国外 4:澳门 5:台湾
-    'gps_now_address': '',
-    'now_province': 340000,  # 当前省份代码，默认安徽
-    'gps_province': '',
-    'now_city': 340100,  # 当前城市代码，默认合肥
-    'gps_city': '',
-    'now_country': 340104,  # 当前地区码，默认安徽合肥蜀山区
-    'gps_country': '',
-    'now_detail': '',  # 具体位置，当前所在地为“国外”时填写
-    'is_inschool': 7,  # 是否在校 0:校外 2:东区 3:南区 4:中区 5:北区 6:西区 7:先研院 8:国金院 9:其他校区 10:高新园区
+    'juzhudi': '安徽省合肥市高新区',  # 居住地
     'body_condition': 1,  # 当前身体状况 1:正常 2:疑似 3:确诊 4:其他
     'body_condition_detail': '',  # 具体情况，当前身体状况为“其他”时填写
     'now_status': 1,  # 当前状态 1:正常在校园内 2:正常在家 3:居家留观 4:集中留观 5:住院治疗 6:其他
@@ -31,29 +22,41 @@ default_info = {
     'last_touch_sars_detail': '',  # 具体情况，当是否接触过疑似患者为“有”时填写
     'is_danger': 0,  # 当前居住地是否为疫情中高风险地区 0:无 1:有
     'is_goto_danger': 0,  # 14天内是否有疫情中高风险地区旅居史 0:无 1:有
-    'other_detail': ''  # 其他情况说明
+    'other_detail': '',  # 其他情况说明
+    ## 新版中去除的字段
+    # 'now_address': 1,  # 当前所在地 1:内地 2:香港 3:国外 4:澳门 5:台湾
+    # 'gps_now_address': '',
+    # 'now_province': 340000,  # 当前省份代码，默认安徽
+    # 'gps_province': '',
+    # 'now_city': 340100,  # 当前城市代码，默认合肥
+    # 'gps_city': '',
+    # 'now_country': 340104,  # 当前地区码，默认安徽合肥蜀山区
+    # 'gps_country': '',
+    # 'now_detail': '',  # 具体位置，当前所在地为“国外”时填写
+    # 'is_inschool': 7,  # 是否在校 0:校外 2:东区 3:南区 4:中区 5:北区 6:西区 7:先研院 8:国金院 9:其他校区 10:高新园区
 }
 
 headers = {
     'authority': 'weixine.ustc.edu.cn',
-    'method': 'POST',
     'path': '/2020/daily_report',
     'scheme': 'https',
-    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'accept-encoding': 'gzip, deflate, br',
     'accept-language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
     'cache-control': 'max-age=0',
     'content-type': 'application/x-www-form-urlencoded',
+    'dnt': '1',
     'origin': 'https://weixine.ustc.edu.cn',
     'referer': 'https://weixine.ustc.edu.cn/2020/home',
-    'sec-ch-ua': '"Chromium";v="92", " Not A;Brand";v="99", "Google Chrome";v="92"',
+    'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="101", "Google Chrome";v="101"',
     'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': 'Windows',
     'sec-fetch-dest': 'document',
     'sec-fetch-mode': 'navigate',
     'sec-fetch-site': 'same-origin',
     'sec-fetch-user': '?1',
     'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.41 Safari/537.36',
 }
 
 
@@ -135,12 +138,12 @@ def report(info: dict, check_first: bool = True) -> bool:
         return False
     data['_token'] = token
     url = 'http://weixine.ustc.edu.cn/2020/daliy_report'
-    headers['cookie'] = \
-        f"PHPSESSID={sess.cookies.get('PHPSESSID')};" + \
-        f"XSRF-TOKEN={sess.cookies.get('XSRF-TOKEN')};" + \
-        f"laravel_session={sess.cookies.get('laravel_session')}"
+    # headers['cookie'] = \
+    #     f"XSRF-TOKEN={sess.cookies.get('XSRF-TOKEN')}; " + \
+    #     f"laravel_session={sess.cookies.get('laravel_session')}"
     r = sess.post(url, data=data)  # , headers=headers)
-    if r.ok and check_report(sess):
+    is_ok = r.text.find('上报成功') != -1
+    if is_ok:  # and check_report(sess):
         return True
     else:
         return False
