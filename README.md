@@ -8,29 +8,29 @@
 
 ```yaml
 ## 示例
-#- id: PBxxxxxxxx  # 学号，必选
-#  password: xxxxxxxx  # 密码，必选
-#  jinji_lxr: 张三  # 紧急联系人，必选
-#  jinji_guanxi: 父亲  # 紧急联系人关系，必选
-#  jiji_mobile: xxxxxxxxxxx  # 紧急联系人电话，必选
-## 以下为可选项
-#  juzhudi: 安徽省合肥市蜀山区
-#  body_condition: 1  # 当前身体状况 1:正常 2:疑似 3:确诊 4:其他
-#  body_condition_detail:   # 具体情况，当前身体状况为“其他”时填写
-#  now_status: 1  # 当前状态 1:正常在校园内 2:正常在家 3:居家留观 4:集中留观 5:住院治疗 6:其他
-#  now_status_detail:   # 具体情况，当前状态选择“其他”时填写
-#  has_fever: 0  # 目前有无发热症状 0:无 1: 有
-#  last_touch_sars: 0  # 是否接触过疑似患者  0:无 1:有
-#  last_touch_sars_date:   # 最近一次接触日期，当是否接触过疑似患者为“有”时填写
-#  last_touch_sars_detail:   # 具体情况，当是否接触过疑似患者为“有”时填写
-#  is_danger: 0   # 当前居住地是否为疫情中高风险地区 0:无 1:有
-#  is_goto_danger: 0   # # 14天内是否有疫情中高风险地区旅居史 0:无 1:有
-#  other_detail:   # 其他情况说明
+- id: PBxxxxxxxx  # 学号，必选
+  password: xxxxxxxx  # 密码，必选
+  jinji_lxr: 张三  # 紧急联系人，必选
+  jinji_guanxi: 父亲  # 紧急联系人关系，必选
+  jiji_mobile: xxxxxxxxxxx  # 紧急联系人电话，必选
+# 以下为可选项
+  juzhudi: 安徽省合肥市蜀山区
+  body_condition: 1  # 当前身体状况 1:正常 2:疑似 3:确诊 4:其他
+  body_condition_detail:   # 具体情况，当前身体状况为“其他”时填写
+  now_status: 1  # 当前状态 1:正常在校园内 2:正常在家 3:居家留观 4:集中留观 5:住院治疗 6:其他
+  now_status_detail:   # 具体情况，当前状态选择“其他”时填写
+  has_fever: 0  # 目前有无发热症状 0:无 1: 有
+  last_touch_sars: 0  # 是否接触过疑似患者  0:无 1:有
+  last_touch_sars_date:   # 最近一次接触日期，当是否接触过疑似患者为“有”时填写
+  last_touch_sars_detail:   # 具体情况，当是否接触过疑似患者为“有”时填写
+  is_danger: 0   # 当前居住地是否为疫情中高风险地区 0:无 1:有
+  is_goto_danger: 0   # # 14天内是否有疫情中高风险地区旅居史 0:无 1:有
+  other_detail:   # 其他情况说明
 
 ## 支持多个账户配置
-#- id: PByyyyyyyy
-#  password: yyyyyyyy
-## ......
+- id: PByyyyyyyy
+  password: yyyyyyyy
+# ......
 ```
 
 ## 部署 & 运行
