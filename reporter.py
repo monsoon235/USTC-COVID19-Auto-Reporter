@@ -67,6 +67,9 @@ def read_info() -> List[dict]:
         full = default_info.copy()
         full.update(info[i])
         info[i] = full
+    if info['now_status'] == 1:
+        assert 'dorm_building' in info and 'dorm' in info, \
+            '"当前状态"(`now_status`)为“正常在校园内”(`1`)时，必须填写“宿舍楼”(`dorm_building`)和“宿舍”(`dorm`)'
     return info
 
 

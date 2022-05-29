@@ -13,7 +13,10 @@
   jinji_lxr: 张三  # 紧急联系人，必选
   jinji_guanxi: 父亲  # 紧急联系人关系，必选
   jiji_mobile: xxxxxxxxxxx  # 紧急联系人电话，必选
-# 以下为可选项
+## 当”当前状态“为”正在在校园内“时必选
+  #  dorm_building: xxx  # 宿舍楼
+  #  dorm: xxx  # 宿舍号
+## 以下为可选项
   juzhudi: 安徽省合肥市蜀山区
   body_condition: 1  # 当前身体状况 1:正常 2:疑似 3:确诊 4:其他
   body_condition_detail:   # 具体情况，当前身体状况为“其他”时填写
